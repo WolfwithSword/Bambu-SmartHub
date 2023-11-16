@@ -49,10 +49,10 @@ function addPrinter(host, port, seriaNumber, accessCode) {
   const newEntry = {
     "host": host,
     "port": port,
-    "clientId": "mqttjs_"+serialNumber,
+    "clientId": "mqttjs_"+serialNumber.toUpperCase(),
     "username": "bblp",
     "password": accessCode,
-    "topics": ["device/" + serialNumber + "/report"],
+    "topics": ["device/" + serialNumber.toUpperCase() + "/report"],
     "rejectUnauthorized": false,
     "reconnectPeriod": 5000, // reconnect every 5s attempt
     "connectTimeout": 10000, // timeout attempt after 10s,
@@ -72,9 +72,13 @@ function addPrinter(host, port, seriaNumber, accessCode) {
   newClient.on('connect', () => {
     console.log(`Connected to ${newEntry.host} - Client ID: ${newEntry.clientId}`);
     handleConnect(newEntry.clientId);
-    if (config.topics && config.topics.length > 0) {
-      config.topics.forEach(topic => client.subscribe(topic));
-    }
+    if(newEntry.topics && newEntry.topics.length > 0) {
+            newClient.subscribe(newEntry.topics, function (err) {
+                if(!err) {
+                    console.log(`Subscribed ${newEntry.clientId} to topics: |${newEntry.topics}|`)
+                }
+            });
+        }
   });
 
   newClient.on('message', (topic, message) => {
@@ -94,10 +98,6 @@ function addPrinter(host, port, seriaNumber, accessCode) {
     console.log(`Disconnected from client ${newEntry.clientId}`);
     handleDisconnect(newEntry.clientId, packet)
   });
-
-  if (newEntry.topics && newEntry.topics.length > 0) {
-    newEntry.topics.forEach(topic => newClient.subscribe(topic));
-  }
 
   printerClients.set(newEntry.clientId, newClient);
 }
@@ -182,10 +182,10 @@ function loadPrinters() {
 
 // publish request message to printer
 function publishPrinterMessage(serialNumber, message) {
-    const client = printerClients.get("mqttjs_"+serialNumber);
+    const client = printerClients.get("mqttjs_"+serialNumber.toUpperCase());
     
     if(client) {
-        client.publish("device/"+serialNumber+"/request", message);
+        client.publish("device/"+serialNumber.toUpperCase()+"/request", message);
         console.log(`Message published to ${serialNumber} on request topic`);
     } else {
       console.log(`No printer found with clientId '${serialNumber}'. Failed to publish.`);

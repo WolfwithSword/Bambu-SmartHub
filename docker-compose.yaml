@@ -22,6 +22,8 @@ services:
     container_name: smarthub
     ports: 
       - 5000:5000
+      - 1990:1990/udp
+      - 2021:2021/udp
     volumes:
      - ./smarthub/config:/app/smarthub/config:rw
     environment:
@@ -37,3 +39,4 @@ services:
 networks:
   default:
     name: bambu-smarthub
+   

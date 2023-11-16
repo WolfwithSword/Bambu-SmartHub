@@ -6,9 +6,12 @@
 *.key
 pwfile
 *.log
+.env
 
 node_modules/
 dist/
 build/
 
 package-lock.json
+
+smarthub/src/config/

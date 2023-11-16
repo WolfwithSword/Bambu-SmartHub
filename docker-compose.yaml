@@ -1,0 +1,38 @@
+version: "3.7"
+services:
+  mqtt-broker:
+    build: ./mqtt
+    user: 1883:1883 # for file permissions
+    image: bambu-smarthub/eclipse-mosquitto
+    container_name: mqtt
+    ports:
+      - 8883:8883 #secure mqtt port
+    volumes:
+      - ./mqtt/mosquitto/config:/mosquitto/config:rw
+      - ./mqtt/mosquitto/data:/mosquitto/data:rw
+      - ./mqtt/mosquitto/log:/mosquitto/log:rw
+      - ./mqtt/mosquitto/certs:/mosquitto/certs:rw
+    environment:
+      MQTT_USER: bambu-smarthub
+      MQTT_PASSWORD: bbl123
+    restart: on-failure:3
+  smarthub:
+    build: ./smarthub
+    image: bambu-smarthub/smarthub
+    container_name: smarthub
+    ports: 
+      - 5000:5000
+    volumes:
+     - ./smarthub/config:/app/smarthub/config:rw
+    environment:
+      APP_PORT: 5000
+      MQTT_USER: bambu-smarthub
+      MQTT_PASSWORD: bbl123
+      MQTT_HOST: mqtt-broker
+      MQTT_PORT: 8883
+    depends_on: 
+      - mqtt-broker
+    restart: on-failure:3
+networks:
+  default:
+    name: bambu-smarthub

@@ -15,3 +15,5 @@ build/
 package-lock.json
 
 smarthub/src/config/
+
+printers-config.json

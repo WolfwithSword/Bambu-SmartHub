@@ -30,6 +30,7 @@ services:
       MQTT_PASSWORD: bambu-smarthub
       MQTT_HOST: mqtt-broker
       MQTT_PORT: 8883
+      CONFIG_FILE: /app/smarthub/config/config.json
     depends_on: 
       - mqtt-broker
     restart: on-failure:3

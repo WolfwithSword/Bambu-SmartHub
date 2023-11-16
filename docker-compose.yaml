@@ -13,8 +13,8 @@ services:
       - ./mqtt/mosquitto/log:/mosquitto/log:rw
       - ./mqtt/mosquitto/certs:/mosquitto/certs:rw
     environment:
-      MQTT_USER: bambu-smarthub
-      MQTT_PASSWORD: bbl123
+      MQTT_USER: bblp
+      MQTT_PASSWORD: bambu-smarthub
     restart: on-failure:3
   smarthub:
     build: ./smarthub
@@ -26,8 +26,8 @@ services:
      - ./smarthub/config:/app/smarthub/config:rw
     environment:
       APP_PORT: 5000
-      MQTT_USER: bambu-smarthub
-      MQTT_PASSWORD: bbl123
+      MQTT_USER: bblp
+      MQTT_PASSWORD: bambu-smarthub
       MQTT_HOST: mqtt-broker
       MQTT_PORT: 8883
     depends_on: 

@@ -47,19 +47,19 @@ function getSNFromClientId(clientId) {
 // if you need to extract the SN from a client in printerClients/printerConfigs 
 function addPrinter(host, port, seriaNumber, accessCode) {
   const newEntry = {
-    host: host,
-    port: port,
-    clientId: "mqttjs_"+serialNumber,
-    username: "bblp",
-    password: accessCode,
-    topics: ["device/" + serialNumber + "/report"],
-    rejectUnauthorized: false,
-    reconnectPeriod: 5000, // reconnect every 5s attempt
-    connectTimeout: 10000, // timeout attempt after 10s,
-    clean: false,
-    protocol: "mqtts",
-    protocolVersion: 4,
-    resubscribe: true
+    "host": host,
+    "port": port,
+    "clientId": "mqttjs_"+serialNumber,
+    "username": "bblp",
+    "password": accessCode,
+    "topics": ["device/" + serialNumber + "/report"],
+    "rejectUnauthorized": false,
+    "reconnectPeriod": 5000, // reconnect every 5s attempt
+    "connectTimeout": 10000, // timeout attempt after 10s,
+    "clean": false,
+    "protocol": "mqtts",
+    "protocolVersion": 4,
+    "resubscribe": true
     
   };
 

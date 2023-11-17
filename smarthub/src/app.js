@@ -84,7 +84,7 @@ function addPrinter(host, port, serialNumber, accessCode) {
   });
 
   newClient.on('message', (topic, message) => {
-    handleMessage(topic, message, newEntry.host);
+    handleMessage(topic, message, newEntry.host, "online");
   });
   
   newClient.on('error', (error) => {
@@ -93,12 +93,16 @@ function addPrinter(host, port, serialNumber, accessCode) {
 
   newClient.on('close', () => {
     console.log(`[MQTT] Connection closed for client ${newEntry.clientId}`);
-    handleClose(newEntry.clientId)
+    handleClose(newEntry.clientId)  
+    let serialNum = getSNFromClientId(newEntry.clientId);
+    handleMessage(`device/${serialNum}/report`, "{\"status\":\"offline\"}", newEntry.host, null);
   });
   
   newClient.on('disconnect', (packet) => {
     console.log(`[MQTT] Disconnected from client ${newEntry.clientId}`);
     handleDisconnect(newEntry.clientId, packet)
+    let serialNum = getSNFromClientId(newEntry.clientId);
+    handleMessage(`device/${serialNum}/report`, "{\"status\":\"offline\"}", newEntry.host, null);
   });
 
   printerClients.set(newEntry.clientId, newClient);
@@ -125,14 +129,17 @@ function removePrinter(clientId) {
 
 
 // messages from printer
-function handleMessage(topic, message, originalHost) {
+function handleMessage(topic, message, originalHost, status) {
     // commented out for now but likely okay to leave uncommented once deployed.
     //console.log(`Received message from - Topic: ${topic}, Message: ${message.toString()}`);
 
     // adding the original printer host/ip to the message
     // only modification we will do to the messages, this way we can use this original ip if needed
     message = Buffer.from(message.toString().replace("{", "{\"original_host\":\"" + originalHost + "\", ", 'utf8'));
-
+    if (status && (status == "online" || status == "offline")) {
+        message = Buffer.from(message.toString().replace("{", "{\"status\":\"" + status + "\", ", 'utf8'));
+    }
+    
     publishHubMessage(topic, message);
 }
 
@@ -170,7 +177,7 @@ function loadPrinters() {
       });
 
       client.on('message', (topic, message) => {
-        handleMessage(topic, message, config.host);
+        handleMessage(topic, message, config.host, "online");
       });
       
       client.on('error', (error) => {
@@ -180,11 +187,15 @@ function loadPrinters() {
       client.on('close', () => {
         console.log(`[MQTT] Connection closed for client ${config.clientId}`);
         handleClose(config.clientId)
+        let serialNum = getSNFromClientId(config.clientId);
+        handleMessage(`device/${serialNum}/report`, "{\"status\":\"offline\"}", config.host, null);
       });
 
       client.on('disconnect', (packet) => {
         console.log(`[MQTT] Disconnected from client ${config.clientId}`);
         handleDisconnect(config.clientId, packet)
+        let serialNum = getSNFromClientId(config.clientId);
+        handleMessage(`device/${serialNum}/report`, "{\"status\":\"offline\"}", config.host, null);
       });
       
       printerClients.set(config.clientId, client);

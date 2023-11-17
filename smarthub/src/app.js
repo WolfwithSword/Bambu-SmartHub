@@ -84,7 +84,7 @@ function addPrinter(host, port, serialNumber, accessCode) {
   });
 
   newClient.on('message', (topic, message) => {
-    handleMessage(topic, message);
+    handleMessage(topic, message, newEntry.host);
   });
   
   newClient.on('error', (error) => {
@@ -125,9 +125,14 @@ function removePrinter(clientId) {
 
 
 // messages from printer
-function handleMessage(topic, message) {
+function handleMessage(topic, message, originalHost) {
     // commented out for now but likely okay to leave uncommented once deployed.
     //console.log(`Received message from - Topic: ${topic}, Message: ${message.toString()}`);
+
+    // adding the original printer host/ip to the message
+    // only modification we will do to the messages, this way we can use this original ip if needed
+    message = Buffer.from(message.toString().replace("{", "{\"original_host\":\"" + originalHost + "\", ", 'utf8'));
+
     publishHubMessage(topic, message);
 }
 
@@ -165,7 +170,7 @@ function loadPrinters() {
       });
 
       client.on('message', (topic, message) => {
-        handleMessage(topic, message);
+        handleMessage(topic, message, config.host);
       });
       
       client.on('error', (error) => {

@@ -107,14 +107,12 @@ class MultiPrinterClient extends EventEmitter {
           });
 
           client.on('close', () => {
-            console.log(`[MQTT] Connection closed for client ${config.clientId}`);
             self.#handleClose(config.clientId)
             let serialNum = self.getSNFromClientId(config.clientId);
             self.#handleMessage(`device/${serialNum}/report`, "{\"status\":\"offline\"}", config.host, serialNum, null);
           });
 
           client.on('disconnect', (packet) => {
-            console.log(`[MQTT] Disconnected from client ${config.clientId}`);
             self.#handleDisconnect(config.clientId, packet)
             let serialNum = self.getSNFromClientId(config.clientId);
             self.#handleMessage(`device/${serialNum}/report`, "{\"status\":\"offline\"}", config.host, serialNum, null);
@@ -123,6 +121,16 @@ class MultiPrinterClient extends EventEmitter {
           this.clients.set(config.clientId, client);
           this.emit('configure-client', this.getSNFromClientId(config.clientId), config.host.trim());
       });
+    }
+    
+    getStatus(clientId) {
+        let client = this.get(clientId);
+        if (client) {
+            return client.connected ? "online" : "offline";
+        }
+        else {
+            return "invalid";
+        }
     }
     
     add(config){

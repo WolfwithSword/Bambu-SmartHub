@@ -35,18 +35,19 @@ class HubConfig extends EventEmitter {
             "resubscribe": true
         };
         this.printerConfigs.push(newEntry);
-        this.updateFile();
+        this.#updateFile();
         console.log(`[Config] Entry for ${serialNumber} added successfully!`);
         return newEntry;
     }
     
     #updateFile(){
-          fs.writeFileSync(this.configFile, JSON.stringify(this.printerConfigs, null, 2));
+        let configFile = process.env.PRINTER_CONFIG_FILE || '/app/smarthub/config/printers-config.json';
+        fs.writeFileSync(configFile, JSON.stringify(this.printerConfigs, null, 2));
     }
     
     remove(clientId) {
         this.printerConfigs = this.printerConfigs.filter(config => config.clientId !== clientId);
-        this.updateFile();
+        this.#updateFile();
         console.log(`[Config] Entry '${clientId}' removed successfully.`);
     }
     

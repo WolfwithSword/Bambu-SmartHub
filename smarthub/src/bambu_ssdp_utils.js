@@ -78,7 +78,7 @@ class BambuSSDP extends EventEmitter {
     }
     
     addConfiguredDevice(serialNumber, ip) {
-        if (this.discoveredDevices[serialNumber] == undefined) {
+        if (this.discoveredDevices[serialNumber] != undefined) {
             this.removeDiscoveredDevice(serialNumber);
         }
         this.configuredDevices[serialNumber] = ip;

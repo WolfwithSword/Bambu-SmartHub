@@ -12,8 +12,16 @@ node_modules/
 dist/
 build/
 
+venv/
+__pycache__/
+
 package-lock.json
 
 smarthub/src/config/
 
 printers-config.json
+access.json
+
+*.db-journal
+
+hub-api/prints/*

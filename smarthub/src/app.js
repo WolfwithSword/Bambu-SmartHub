@@ -67,6 +67,30 @@ bambuSSDP.on('discovery', (sn, ip) => {
     //console.log(`${sn} at ${ip}`);
 });
 
+bambuSSDP.on('update-model', (sn, model) => {
+    if (model == undefined) {
+        return;
+    }
+    if (model == "3DPrinter-X1-Carbon" || model == "BL-P001") {
+        config.updateModel(sn, "X1C");
+    }
+    else if (model == "3DPrinter-X1" || model == "BL-P001") {
+        config.updateModel(sn, "X1");
+    }
+    else if (model == "C11") {
+        config.updateModel(sn, "P1P");
+    }
+    else if (model == "C12") {
+        config.updateModel(sn, "P1S");
+    }
+    else if (model == "C13") {
+        config.updateModel(sn, "X1E");
+    }
+    else if (model == "N1") {
+        config.updateModel(sn, "A1 Mini");
+    }
+});
+
 bambuSSDP.search();
 // End SSDP
 

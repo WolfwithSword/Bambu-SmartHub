@@ -49,6 +49,11 @@ class BambuSSDP extends EventEmitter {
                                 delete self.configuredDevices[sn];
                             }
                         }
+                      let devModel_re = new RegExp(/DevModel.bambu.com: (.*)/);
+                      let m = msg.match(devModel_re);
+                      if (m) {
+                          self.emit("update-model", sn, m[1]);
+                      }
                     }
                     
                 }

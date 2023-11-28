@@ -7,6 +7,7 @@ services:
     container_name: mqtt
     ports:
       - 8883:8883 #secure mqtt port
+      - 8080:8080 # websocket port
     volumes:
       - ./mqtt/mosquitto/config:/mosquitto/config:rw
       - ./mqtt/mosquitto/data:/mosquitto/data:rw
@@ -16,6 +17,8 @@ services:
       MQTT_USER: bblp
       MQTT_PASSWORD: bambu-smarthub
     restart: on-failure:3
+    logging:
+      driver: none
   smarthub:
     build: ./smarthub
     image: bambu-smarthub/smarthub
@@ -33,9 +36,35 @@ services:
       MQTT_HOST: mqtt-broker
       MQTT_PORT: 8883
       PRINTER_CONFIG_FILE: /app/smarthub/config/printers-config.json
+      ACCESS_FILE: /app/smarthub/config/access.json
     depends_on: 
       - mqtt-broker
     restart: on-failure:3
+#  smarthub-api:
+#    build: ./hub-api
+#    image: bambu-smarthub/smarthub-api
+#    container_name: hub-api
+#    ports: 
+#      - 3500:3500
+#    volumes:
+#      - ./smarthub/config:/app/smarthub/config:ro
+#      - ./hub-api/prints:/app/prints:rw
+#      - ./hub-api/database:/app/database:rw
+#      - ./hub-api/resources:/app/resources:rw
+#    environment:
+#      APP_PORT: 3500
+#      MQTT_USER: bblp
+#      MQTT_PASSWORD: bambu-smarthub
+#      MQTT_HOST: mqtt-broker
+#      MQTT_PORT: 8883
+#      ACCESS_FILE: /app/smarthub/config/access.json
+#      PRINTS_PATH: /app/prints
+#      RESOURCES_PATH: /app/resources
+#      SQLITE_DB_PATH: /app/database
+#      HMS_LANG: en
+#    depends_on: 
+#      - smarthub
+#    restart: on-failure:3
 networks:
   default:
     name: bambu-smarthub
